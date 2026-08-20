@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Activity } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "next/link";
 
 const methods = [
   {
