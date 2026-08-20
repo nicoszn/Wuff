@@ -1,0 +1,122 @@
+import "tailwindcss";
+
+@theme {
+  /* Color coding — consistent across app */
+  --color-armed: #16a34a; /* green: armed, running, profitable, approval */
+  --color-armed-fg: #052e16;
+  --color-warning: #d97706; /* amber: drawdown near limit, rate limit high, pending */
+  --color-warning-fg: #451a03;
+  --color-halted: #dc2626; /* red: halted, loss, rejection, error */
+  --color-halted-fg: #450a0a;
+  --color-inactive: #6b7280; /* gray: paused, disabled, historical */
+  --color-inactive-fg: #1f2937;
+  --color-signal: #2563eb; /* blue: info, signal fired */
+  --color-signal-fg: #172554;
+
+  --color-surface: #0b0d10;
+  --color-surface-raised: #14171b;
+  --color-surface-border: #23272e;
+  --color-text-primary: #f2f3f5;
+  --color-text-secondary: #9aa1ab;
+
+  /* Type scale (system sans-serif, mobile-first) */
+  --text-display: 28px;
+  --text-display--line-height: 1.2;
+  --text-display--font-weight: 700;
+  --text-heading: 18px;
+  --text-heading--font-weight: 600;
+  --text-body: 14px;
+  --text-body--font-weight: 400;
+  --text-caption: 12px;
+  --text-caption--font-weight: 500;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+
+  /* Spacing */
+  --spacing-gutter-mobile: 16px;
+  --spacing-gutter-tablet: 24px;
+  --spacing-card-padding: 16px;
+  --spacing-button-height: 44px;
+  --spacing-section-gap: 24px;
+
+  --animate-card-in: card-in 200ms ease-out;
+  --animate-toggle: toggle-swap 100ms ease-out;
+  --animate-sheet-in: sheet-in 250ms ease-in-out;
+  --animate-pulse-once: pulse-once 300ms ease-out;
+  --animate-shimmer: shimmer 1.5s linear infinite;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toggle-swap {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-once {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html,
+body {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  height: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
