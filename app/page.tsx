@@ -79,7 +79,7 @@ export default function Landing() {
 
           <div className="mt-10">
             <Link
-              to="/dashboard"
+              href="/dashboard"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110 hover:shadow-[0_0_25px_oklch(0.72_0.19_180_/_0.25)]"
             >
               Run Analysis →
