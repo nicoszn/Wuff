@@ -61,6 +61,7 @@ function Sparkline({ values, stroke }: { values: number[]; stroke: string }) {
 }
 
 export function RegimeCard({ signal, index }: { signal: AssetSignal; index: number }) {
+  // Fallback to Neutral if current regime is unrecognised
   const style = REGIME_STYLES[signal.regime.currentRegime] ?? REGIME_STYLES.Neutral;
   const { Icon } = style;
   const up = signal.changePct >= 0;
