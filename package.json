@@ -19,7 +19,8 @@
     "zustand": "^5.0.0",
     "zod": "^4.0.0",
     "lucide-react": "^0.400.0",
-    "lightweight-charts": "^4.2.0"
+    "lightweight-charts": "^4.2.0",
+    "@tanstack/react-query": "5.101.4"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
