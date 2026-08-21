@@ -18,7 +18,7 @@ function SkeletonRow() {
   return <div className="h-[60px] animate-shimmer rounded-xl border border-surface-border bg-surface-raised" />;
 }
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const [timeframe, setTimeframe] = useState<Timeframe>("4h");
 
   const { data, isLoading, isError, dataUpdatedAt, refetch, isFetching } = useQuery({
