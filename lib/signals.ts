@@ -53,11 +53,13 @@ export async function buildDashboardSignals(
   for (const pd of priceData) {
     try {
       const regime = runHMM(pd.prices);
+      const prices = pd.prices;
+      const latestPrice = prices.length > 0 ? prices[prices.length - 1] : 0;
       assets.push({
         coin: pd.coin,
         regime,
         priceData: pd,
-        latestPrice: pd.prices[pd.prices.length - 1],
+        latestPrice,
         changePct: pctChange(pd.displayPrices),
       });
     } catch (err) {
@@ -70,6 +72,8 @@ export async function buildDashboardSignals(
     for (let j = i + 1; j < priceData.length; j++) {
       const a = priceData[i];
       const b = priceData[j];
+      // Ensure both have prices
+      if (!a || !b) continue;
       const len = Math.min(a.prices.length, b.prices.length);
       if (len < MIN_ADF_POINTS) continue;
 
