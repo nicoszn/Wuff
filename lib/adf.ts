@@ -55,7 +55,7 @@ function adfRegress(residuals: number[], maxLag: number): ADFRegressionResult {
   // Dependent: Δε_t
   // Regressors: ε_{t-1}, Δε_{t-1}, ..., Δε_{t-lag}
   const nObs = T - lag - 1;
-  if (nObs < lag + 2) {
+  if (nObs < lag + 2 || lag < 1) {
     return { gamma: 0, seGamma: 1, tStat: 0, residuals: [] };
   }
 
@@ -73,7 +73,10 @@ function adfRegress(residuals: number[], maxLag: number): ADFRegressionResult {
 
   // OLS via normal equations: (X'X)^{-1} X'y
   const n = yArr.length;
-  const k = xArr[0].length;
+  const k = xArr[0]?.length ?? 0;
+  if (n < k || k === 0) {
+    return { gamma: 0, seGamma: 1, tStat: 0, residuals: [] };
+  }
 
   // X'X
   const XtX = Array.from({ length: k }, () => Array(k).fill(0));
