@@ -12,7 +12,8 @@ const STRENGTH_STYLE: Record<string, { chip: string; text: string }> = {
 };
 
 export function PairCard({ pair, index }: { pair: PairSignal; index: number }) {
-  const style = STRENGTH_STYLE[pair.result.strength];
+  // Provide a fallback to "None" style if strength is unrecognised
+  const style = STRENGTH_STYLE[pair.result.strength] ?? STRENGTH_STYLE.None;
   const Icon = pair.result.isCointegrated ? Link2 : Link2Off;
 
   return (
