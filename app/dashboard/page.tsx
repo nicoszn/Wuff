@@ -6,9 +6,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCw, AlertTriangle } from "lucide-react";
 import { ALL_COINS, type Timeframe } from "@/lib/crypto";
 import { buildDashboardSignals } from "@/lib/signals";
-import { TimeframeSelector } from "@/components/dashboard/timeframe-selector";
-import { RegimeCard } from "@/components/dashboard/regime-card";
-import { PairCard } from "@/components/dashboard/pair-card";
+import { TimeframeSelector } from "@/components/timeframe-selector";
+import { RegimeCard } from "@/components/regime-card";
+import { PairCard } from "@/components/pair-card";
 
 function SkeletonCard() {
   return <div className="h-[172px] animate-shimmer rounded-2xl border border-surface-border bg-surface-raised" />;
