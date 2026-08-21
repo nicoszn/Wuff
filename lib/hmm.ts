@@ -35,17 +35,27 @@ function initParams(returns: number[]) {
   const n = sorted.length;
   const third = Math.floor(n / 3);
 
-  // Split sorted returns into 3 quintiles for initial means
+  // Ensure we have at least one element per group
+  const safeSlice = (start: number, end: number) => {
+    const slice = sorted.slice(start, end);
+    return slice.length > 0 ? slice : [0];
+  };
+
+  // Split sorted returns into 3 groups for initial means
+  const groupBull = safeSlice(2 * third, n);
+  const groupNeutral = safeSlice(third, 2 * third);
+  const groupBear = safeSlice(0, third);
+
   const mu = [
-    sorted.slice(2 * third).reduce((s, v) => s + v, 0) / (n - 2 * third), // bull (highest)
-    sorted.slice(third, 2 * third).reduce((s, v) => s + v, 0) / third, // neutral
-    sorted.slice(0, third).reduce((s, v) => s + v, 0) / third, // bear (lowest)
+    groupBull.reduce((s, v) => s + v, 0) / groupBull.length, // bull (highest)
+    groupNeutral.reduce((s, v) => s + v, 0) / groupNeutral.length, // neutral
+    groupBear.reduce((s, v) => s + v, 0) / groupBear.length, // bear (lowest)
   ];
 
   const sigma = [
-    Math.sqrt(sorted.slice(2 * third).reduce((s, v) => s + (v - mu[0]) ** 2, 0) / (n - 2 * third)) || 0.01,
-    Math.sqrt(sorted.slice(third, 2 * third).reduce((s, v) => s + (v - mu[1]) ** 2, 0) / third) || 0.01,
-    Math.sqrt(sorted.slice(0, third).reduce((s, v) => s + (v - mu[2]) ** 2, 0) / third) || 0.01,
+    Math.sqrt(groupBull.reduce((s, v) => s + (v - mu[0]) ** 2, 0) / groupBull.length) || 0.01,
+    Math.sqrt(groupNeutral.reduce((s, v) => s + (v - mu[1]) ** 2, 0) / groupNeutral.length) || 0.01,
+    Math.sqrt(groupBear.reduce((s, v) => s + (v - mu[2]) ** 2, 0) / groupBear.length) || 0.01,
   ];
 
   // Equal transition probabilities
@@ -278,13 +288,20 @@ export function runHMM(prices: number[]): RegimeResult {
   // Sort states by mu to label them
   const indicesByMu = [0, 1, 2].sort((a, b) => mu[a] - mu[b]);
   // indicesByMu[0] = Bear, [1] = Neutral, [2] = Bull
-  const stateLabels: Record<number, string> = {
-    [indicesByMu[0]]: "Bear",
-    [indicesByMu[1]]: "Neutral",
-    [indicesByMu[2]]: "Bull",
-  };
+  const stateLabels: Record<number, string> = {};
+  // Ensure we have exactly 3 distinct indices
+  if (indicesByMu.length === 3) {
+    stateLabels[indicesByMu[0]] = "Bear";
+    stateLabels[indicesByMu[1]] = "Neutral";
+    stateLabels[indicesByMu[2]] = "Bull";
+  } else {
+    // fallback (should never happen)
+    stateLabels[0] = "Bear";
+    stateLabels[1] = "Neutral";
+    stateLabels[2] = "Bull";
+  }
 
-  const regimes = rawStates.map((s) => stateLabels[s]);
+  const regimes = rawStates.map((s) => stateLabels[s]!); // non-null assertion
   const currentRegime = regimes[regimes.length - 1];
 
   // Confidence: proportion of current regime in last 20 days
@@ -295,12 +312,20 @@ export function runHMM(prices: number[]): RegimeResult {
 
   // Distribution
   const counts = { Bull: 0, Bear: 0, Neutral: 0 };
-  for (const r of regimes) counts[r as keyof typeof counts]++;
+  for (const r of regimes) {
+    if (r === "Bull") counts.Bull++;
+    else if (r === "Bear") counts.Bear++;
+    else if (r === "Neutral") counts.Neutral++;
+  }
   const regimeDistribution = {
     bull: counts.Bull / regimes.length,
     bear: counts.Bear / regimes.length,
     neutral: counts.Neutral / regimes.length,
   };
+
+  const bullIndex = indicesByMu[2];
+  const neutralIndex = indicesByMu[1];
+  const bearIndex = indicesByMu[0];
 
   return {
     regimes,
@@ -308,14 +333,14 @@ export function runHMM(prices: number[]): RegimeResult {
     currentConfidence,
     regimeDistribution,
     stateMeans: {
-      bull: mu[indicesByMu[2]],
-      neutral: mu[indicesByMu[1]],
-      bear: mu[indicesByMu[0]],
+      bull: mu[bullIndex],
+      neutral: mu[neutralIndex],
+      bear: mu[bearIndex],
     },
     stateVolatilities: {
-      bull: sigma[indicesByMu[2]],
-      neutral: sigma[indicesByMu[1]],
-      bear: sigma[indicesByMu[0]],
+      bull: sigma[bullIndex],
+      neutral: sigma[neutralIndex],
+      bear: sigma[bearIndex],
     },
   };
 }
