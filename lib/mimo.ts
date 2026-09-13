@@ -65,3 +65,39 @@ export async function synthesizeClonedSpeech({
   const arrayBuffer = await res.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
+
+export type PingResult = {
+  ok: boolean;
+  status: number;
+  latencyMs: number;
+  detail?: string;
+};
+
+/**
+ * Lightweight health check — hits the provider's /models endpoint
+ * (no audio generation, no reference upload) to confirm the API key
+ * and endpoint are reachable and responding.
+ */
+export async function pingProvider(): Promise<PingResult> {
+  const started = Date.now();
+  try {
+    const res = await fetch(`${BASE_URL}/models`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${getApiKey()}` },
+    });
+    const latencyMs = Date.now() - started;
+
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      return { ok: false, status: res.status, latencyMs, detail };
+    }
+    return { ok: true, status: res.status, latencyMs };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      latencyMs: Date.now() - started,
+      detail: err instanceof Error ? err.message : "Network error",
+    };
+  }
+}
