@@ -48,10 +48,15 @@ export async function POST(req: NextRequest) {
       format: "mp3",
     });
 
-    // FIX: Convert Node Buffer to a standard Web Blob to comply with global BodyInit types
-    const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+    // FIX: Extract the raw underlying ArrayBuffer/Uint8Array elements
+    // to cleanly satisfy Web API type definitions without compilation collisions.
+    const standardUint8Array = new Uint8Array(
+      audioBuffer.buffer,
+      audioBuffer.byteOffset,
+      audioBuffer.byteLength
+    );
 
-    return new NextResponse(audioBlob, {
+    return new NextResponse(standardUint8Array, {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
