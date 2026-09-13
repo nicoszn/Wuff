@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "services": {
+    "frontend-app": {
+      "root": "."
+    },
+    "downloader-api": {
+      "root": "downloader-service/"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/downloader", "destination": "downloader-api" }
+  ]
+}
