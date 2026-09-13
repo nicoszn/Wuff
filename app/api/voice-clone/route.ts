@@ -1,9 +1,16 @@
 // app/api/voice-clone/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { synthesizeClonedSpeech } from "@/lib/mimo";
+import { synthesizeClonedSpeech, pingProvider } from "@/lib/mimo";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+// GET /api/voice-clone — health check. Confirms MIMO_API_KEY is set and
+// the provider endpoint is reachable, without generating any audio.
+export async function GET() {
+  const result = await pingProvider();
+  return NextResponse.json(result, { status: result.ok ? 200 : 502 });
+}
 
 export async function POST(req: NextRequest) {
   try {
