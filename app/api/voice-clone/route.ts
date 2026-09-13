@@ -12,6 +12,7 @@ export async function GET() {
   return NextResponse.json(result, { status: result.ok ? 200 : 502 });
 }
 
+// POST /api/voice-clone — Generates audio payload from Form Data input
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
     const text = form.get("text");
     const style = form.get("style");
 
+    // Validation checks
     if (!(audio instanceof File) || audio.size === 0) {
       return NextResponse.json(
         { error: "Missing reference audio file." },
@@ -38,6 +40,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Call our library helper (returns a Node Buffer)
     const audioBuffer = await synthesizeClonedSpeech({
       referenceAudio: audio,
       text,
@@ -45,7 +48,8 @@ export async function POST(req: NextRequest) {
       format: "mp3",
     });
 
-    return new NextResponse(new Uint8Array(audioBuffer), {
+    // Pass the buffer stream directly into the standard response
+    return new NextResponse(audioBuffer, {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
