@@ -48,8 +48,10 @@ export async function POST(req: NextRequest) {
       format: "mp3",
     });
 
-    // Pass the buffer stream directly into the standard response
-    return new NextResponse(audioBuffer, {
+    // FIX: Convert Node Buffer to a standard Web Blob to comply with global BodyInit types
+    const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg" });
+
+    return new NextResponse(audioBlob, {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
