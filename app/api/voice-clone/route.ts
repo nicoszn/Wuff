@@ -1,0 +1,52 @@
+// app/api/voice-clone/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { synthesizeClonedSpeech } from "@/lib/mimo";
+
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
+export async function POST(req: NextRequest) {
+  try {
+    const form = await req.formData();
+    const audio = form.get("audio");
+    const text = form.get("text");
+    const style = form.get("style");
+
+    if (!(audio instanceof File) || audio.size === 0) {
+      return NextResponse.json(
+        { error: "Missing reference audio file." },
+        { status: 400 }
+      );
+    }
+    if (typeof text !== "string" || text.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Missing text to synthesize." },
+        { status: 400 }
+      );
+    }
+    if (audio.size > 10 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Reference audio must be 10MB or smaller." },
+        { status: 400 }
+      );
+    }
+
+    const audioBuffer = await synthesizeClonedSpeech({
+      referenceAudio: audio,
+      text,
+      styleInstruction: typeof style === "string" && style.trim() ? style : undefined,
+      format: "mp3",
+    });
+
+    return new NextResponse(new Uint8Array(audioBuffer), {
+      status: 200,
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Content-Disposition": 'inline; filename="clone-output.mp3"',
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
