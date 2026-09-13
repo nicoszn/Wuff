@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge'; // Edge runtime optimization for fast regional response on Vercel
+export const runtime = 'nodejs';
 
 const TWEET_ID_REGEX = /status\/(\d+)/;
 
