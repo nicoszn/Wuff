@@ -1,13 +1,9 @@
 // lib/mimo.ts
 // Server-only helper for MiMo-V2.5-TTS-VoiceClone (via TokenPAPA).
 // Requires MIMO_API_KEY in your environment (.env.local).
-// Provider docs: https://doc.tokenpapa.ai/en/docs/blog/mimo-tts-api-guide
-//
-// Swapping providers later: this is the only file that talks to the
-// network. Change BASE_URL / the request shape here and nothing else
-// in the app needs to change.
+// Provider docs: https://tokenpapa.ai
 
-const BASE_URL = "https://tokenpapa.ai/v1";
+const BASE_URL = "https://tokenpapa.ai";
 const CLONE_MODEL = "mimo-v2.5-tts-voiceclone";
 
 function getApiKey(): string {
@@ -28,7 +24,7 @@ export type ClonedSpeechOptions = {
 /**
  * Synthesizes speech in a cloned voice from a reference audio sample.
  * The sample is sent inline (base64) with the request — nothing is
- * registered or persisted on the provider side, no local storage either.
+ * registered or persisted on the provider side.
  */
 export async function synthesizeClonedSpeech({
   referenceAudio,
@@ -36,7 +32,9 @@ export async function synthesizeClonedSpeech({
   styleInstruction,
   format = "mp3",
 }: ClonedSpeechOptions): Promise<Buffer> {
-  const bytes = Buffer.from(await referenceAudio.arrayBuffer());
+  // Convert standard File object to an ArrayBuffer, then into a Node.js Buffer
+  const arrayBuffer = await referenceAudio.arrayBuffer();
+  const bytes = Buffer.from(arrayBuffer);
   const referenceAudioBase64 = bytes.toString("base64");
 
   const res = await fetch(`${BASE_URL}/audio/speech`, {
@@ -48,7 +46,7 @@ export async function synthesizeClonedSpeech({
     body: JSON.stringify({
       model: CLONE_MODEL,
       input: text,
-      voice: "alloy", // required by schema, ignored by the clone model
+      voice: "alloy", // required by OpenAI schema validation, ignored by clone backend
       response_format: format,
       extra_body: {
         reference_audio: referenceAudioBase64,
@@ -62,8 +60,8 @@ export async function synthesizeClonedSpeech({
     throw new Error(`Speech synthesis failed (${res.status}): ${detail}`);
   }
 
-  const arrayBuffer = await res.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  const responseArrayBuffer = await res.arrayBuffer();
+  return Buffer.from(responseArrayBuffer);
 }
 
 export type PingResult = {
@@ -75,8 +73,7 @@ export type PingResult = {
 
 /**
  * Lightweight health check — hits the provider's /models endpoint
- * (no audio generation, no reference upload) to confirm the API key
- * and endpoint are reachable and responding.
+ * to confirm the API key and endpoint are reachable.
  */
 export async function pingProvider(): Promise<PingResult> {
   const started = Date.now();
