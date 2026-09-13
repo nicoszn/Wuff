@@ -3,10 +3,10 @@
   "version": 2,
   "services": {
     "frontend-app": {
-      "path": "."
+      "root": "."
     },
     "downloader-api": {
-      "path": "downloader-service/",
+      "root": "downloader-service/",
       "runtime": "container",
       "entrypoint": "Dockerfile.vercel"
     }
