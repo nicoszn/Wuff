@@ -5,7 +5,9 @@
       "root": "."
     },
     "downloader-api": {
-      "root": "downloader-service/"
+      "root": "downloader-service/",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.vercel"
     }
   },
   "rewrites": [
