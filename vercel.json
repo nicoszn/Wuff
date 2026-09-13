@@ -1,16 +1,24 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "services": {
     "frontend-app": {
-      "root": "."
+      "path": "."
     },
     "downloader-api": {
-      "root": "downloader-service/",
+      "path": "downloader-service/",
       "runtime": "container",
       "entrypoint": "Dockerfile.vercel"
     }
   },
   "rewrites": [
-    { "source": "/api/downloader", "destination": "downloader-api" }
+    { 
+      "source": "/api/downloader", 
+      "destination": { "service": "downloader-api" } 
+    },
+    { 
+      "source": "/(.*)", 
+      "destination": { "service": "frontend-app" } 
+    }
   ]
 }
