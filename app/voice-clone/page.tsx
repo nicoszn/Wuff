@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import VoiceCloneTool from "@/components/voice-studio/VoiceCloneTool";
+import AdSlot from "@/components/ads/AdSlot";
 
 // Set this once you have a domain, e.g. NEXT_PUBLIC_SITE_URL=https://yourapp.com
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
@@ -105,6 +106,8 @@ export default function VoiceClonePage() {
           <VoiceCloneTool />
         </div>
 
+        <AdSlot slot={process.env.NEXT_PUBLIC_AD_SLOT_CLONE_INLINE ?? ""} className="mb-10" />
+
         <section className="space-y-8 text-text-secondary">
           <div>
             <h2 className="text-heading text-text-primary">How voice cloning works</h2>
@@ -138,13 +141,15 @@ export default function VoiceClonePage() {
             </ul>
           </div>
 
+          <AdSlot slot={process.env.NEXT_PUBLIC_AD_SLOT_CLONE_FAQ ?? ""} />
+
           <div className="mt-8 grid sm:grid-cols-2 gap-4">
             <h2 className="text-heading text-text-primary">Frequently asked questions</h2>
             <div className="mt-3 space-y-4">
               {faqs.map((f) => (
-                <div className="rounded-xl border border-border/40 bg-card/50 p-5" key={f.q}>
+                <div className="rounded-xl border border-surface-border/60 bg-surface-raised/50 p-5" key={f.q}>
                   <h3 className="text-sm font-semibold font-mono text-text-primary mb-2">{f.q}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.a}</p>
+                  <p className="text-xs text-text-muted leading-relaxed">{f.a}</p>
                 </div>
               ))}
             </div>
@@ -152,7 +157,11 @@ export default function VoiceClonePage() {
 
           <p className="border-t border-surface-border pt-6 text-caption text-text-muted">
             Use this tool responsibly: only clone voices you own or have explicit permission to use. Generated audio
-            is created locally in your session and is not shared publicly by this tool.
+            is created locally in your session and is not shared publicly by this tool. See our{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-text-secondary">
+              Privacy Policy
+            </Link>
+            .
           </p>
         </section>
       </div>

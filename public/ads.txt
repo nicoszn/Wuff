@@ -1,0 +1,4 @@
+# Replace pub-0000000000000000 with your real AdSense publisher ID.
+# Find it in AdSense under Account > Account information ("Publisher ID").
+# This file must be reachable at https://yourdomain.com/ads.txt exactly as-is.
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

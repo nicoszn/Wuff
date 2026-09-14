@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import AdSenseLoader from "@/components/ads/AdSenseLoader";
+import ConsentBanner from "@/components/ads/ConsentBanner";
 
 export const metadata: Metadata = {
   title: "Wuff Voice Desk — Free AI Voice Cloning & Voice Design",
@@ -22,7 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <AdSenseLoader />
+        <Providers>
+          {children}
+          <ConsentBanner />
+        </Providers>
       </body>
     </html>
   );
