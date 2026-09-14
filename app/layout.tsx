@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Wuff Voice Desk",
-  description: "Voice desk for Wuff.",
+  title: "Wuff Voice Desk — Free AI Voice Cloning & Voice Design",
+  description: "Free AI voice tools: clone a voice from a short sample, or design a new one from a text description. No signup, no watermark — generate and download in seconds.",
 };
 
 export const viewport: Viewport = {
