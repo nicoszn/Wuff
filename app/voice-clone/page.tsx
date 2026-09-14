@@ -138,13 +138,13 @@ export default function VoiceClonePage() {
             </ul>
           </div>
 
-          <div>
+          <div className="mt-8 grid sm:grid-cols-2 gap-4">
             <h2 className="text-heading text-text-primary">Frequently asked questions</h2>
             <div className="mt-3 space-y-4">
               {faqs.map((f) => (
-                <div key={f.q}>
-                  <h3 className="text-sm font-semibold text-text-primary">{f.q}</h3>
-                  <p className="mt-1 text-sm leading-relaxed">{f.a}</p>
+                <div className="rounded-xl border border-border/40 bg-card/50 p-5" key={f.q}>
+                  <h3 className="text-sm font-semibold font-mono text-primary mb-2">{f.q}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{f.a}</p>
                 </div>
               ))}
             </div>
