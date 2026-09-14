@@ -144,7 +144,7 @@ export default function VoiceClonePage() {
               {faqs.map((f) => (
                 <div className="rounded-xl border border-border/40 bg-card/50 p-5" key={f.q}>
                   <h3 className="text-sm font-semibold font-mono text-text-primary mb-2">{f.q}</h3>
-                  <p className="text-xs text-text-muted-foreground leading-relaxed">{f.a}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{f.a}</p>
                 </div>
               ))}
             </div>
