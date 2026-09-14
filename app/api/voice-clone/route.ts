@@ -5,6 +5,8 @@ import { synthesizeClonedSpeech, pingProvider } from "@/lib/mimo";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+const MAX_REFERENCE_BYTES = 10 * 1024 * 1024;
+
 // GET /api/voice-clone — health check. Confirms MIMO_API_KEY is set and
 // the provider endpoint is reachable, without generating any audio.
 export async function GET() {
@@ -12,7 +14,6 @@ export async function GET() {
   return NextResponse.json(result, { status: result.ok ? 200 : 502 });
 }
 
-// POST /api/voice-clone — Generates audio payload from Form Data input
 export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
@@ -20,7 +21,6 @@ export async function POST(req: NextRequest) {
     const text = form.get("text");
     const style = form.get("style");
 
-    // Validation checks
     if (!(audio instanceof File) || audio.size === 0) {
       return NextResponse.json(
         { error: "Missing reference audio file." },
@@ -33,34 +33,25 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    if (audio.size > 10 * 1024 * 1024) {
+    if (audio.size > MAX_REFERENCE_BYTES) {
       return NextResponse.json(
         { error: "Reference audio must be 10MB or smaller." },
         { status: 400 }
       );
     }
 
-    // Call our library helper (returns a Node Buffer)
-    const audioBuffer = await synthesizeClonedSpeech({
+    const { buffer, mimeType } = await synthesizeClonedSpeech({
       referenceAudio: audio,
       text,
       styleInstruction: typeof style === "string" && style.trim() ? style : undefined,
-      format: "mp3",
+      format: "wav",
     });
 
-    // FIX: Extract the raw underlying ArrayBuffer/Uint8Array elements
-    // to cleanly satisfy Web API type definitions without compilation collisions.
-    const standardUint8Array = new Uint8Array(
-      audioBuffer.buffer,
-      audioBuffer.byteOffset,
-      audioBuffer.byteLength
-    );
-
-    return new NextResponse(standardUint8Array, {
+    return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
-        "Content-Type": "audio/mpeg",
-        "Content-Disposition": 'inline; filename="clone-output.mp3"',
+        "Content-Type": mimeType,
+        "Content-Disposition": 'inline; filename="clone-output.wav"',
       },
     });
   } catch (err) {
