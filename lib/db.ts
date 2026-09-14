@@ -9,7 +9,7 @@
 import Dexie, { type EntityTable } from "dexie";
 
 export interface SavedVoice {
-  id?: number;
+  id: number;
   name: string;
   blob: Blob;
   mimeType: string;
@@ -23,7 +23,7 @@ export interface GenerationTake {
 }
 
 export interface GenerationRecord {
-  id?: number;
+  id: number;
   mode: "clone" | "design";
   text: string;
   direction?: string;
