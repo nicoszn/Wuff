@@ -1,9 +1,17 @@
 // lib/mimo.ts
-// Server-only helper for MiMo-V2.5-TTS-VoiceClone (via TokenPAPA).
+// Server-only client for Xiaomi's official MiMo-V2.5-TTS-VoiceClone API.
 // Requires MIMO_API_KEY in your environment (.env.local).
-// Provider docs: https://tokenpapa.ai
+// Get a key: https://platform.xiaomimimo.com/console/api-keys
+// Model docs: https://mimo.mi.com/models/en/mimo-v2.5-tts-voiceclone
+//
+// The API is OpenAI-protocol-compatible but routes speech through
+// chat.completions rather than a dedicated /audio/speech endpoint:
+//   - reference audio -> data URI under `audio.voice`
+//   - style instruction (optional) -> the "user" message content
+//   - text to speak -> the "assistant" message content
+//   - synthesized audio comes back base64-encoded inside the response
 
-const BASE_URL = "https://tokenpapa.ai";
+const BASE_URL = "https://api.xiaomimimo.com/v1";
 const CLONE_MODEL = "mimo-v2.5-tts-voiceclone";
 
 function getApiKey(): string {
@@ -18,26 +26,39 @@ export type ClonedSpeechOptions = {
   referenceAudio: File;
   text: string;
   styleInstruction?: string;
-  format?: "mp3" | "wav" | "opus" | "flac";
+  format?: "wav" | "mp3";
+};
+
+export type ClonedSpeechResult = {
+  buffer: Buffer;
+  mimeType: string;
+};
+
+type ChatCompletionAudioResponse = {
+  choices?: Array<{
+    message?: {
+      audio?: { data?: string };
+    };
+  }>;
+  error?: { message?: string };
 };
 
 /**
  * Synthesizes speech in a cloned voice from a reference audio sample.
- * The sample is sent inline (base64) with the request — nothing is
- * registered or persisted on the provider side.
+ * The sample is sent inline as a base64 data URI — nothing is
+ * registered or persisted, on the provider side or locally.
  */
 export async function synthesizeClonedSpeech({
   referenceAudio,
   text,
   styleInstruction,
-  format = "mp3",
-}: ClonedSpeechOptions): Promise<Buffer> {
-  // Convert standard File object to an ArrayBuffer, then into a Node.js Buffer
-  const arrayBuffer = await referenceAudio.arrayBuffer();
-  const bytes = Buffer.from(arrayBuffer);
-  const referenceAudioBase64 = bytes.toString("base64");
+  format = "wav",
+}: ClonedSpeechOptions): Promise<ClonedSpeechResult> {
+  const bytes = Buffer.from(await referenceAudio.arrayBuffer());
+  const referenceMimeType = referenceAudio.type || "audio/wav";
+  const referenceDataUri = `data:${referenceMimeType};base64,${bytes.toString("base64")}`;
 
-  const res = await fetch(`${BASE_URL}/audio/speech`, {
+  const res = await fetch(`${BASE_URL}/chat/completions`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${getApiKey()}`,
@@ -45,23 +66,33 @@ export async function synthesizeClonedSpeech({
     },
     body: JSON.stringify({
       model: CLONE_MODEL,
-      input: text,
-      voice: "alloy", // required by OpenAI schema validation, ignored by clone backend
-      response_format: format,
-      extra_body: {
-        reference_audio: referenceAudioBase64,
-        ...(styleInstruction ? { style_instruction: styleInstruction } : {}),
+      messages: [
+        { role: "user", content: styleInstruction ?? "" },
+        { role: "assistant", content: text },
+      ],
+      audio: {
+        format,
+        voice: referenceDataUri,
       },
     }),
   });
 
+  const payload = (await res.json().catch(() => null)) as ChatCompletionAudioResponse | null;
+
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
+    const detail = payload?.error?.message ?? JSON.stringify(payload ?? {});
     throw new Error(`Speech synthesis failed (${res.status}): ${detail}`);
   }
 
-  const responseArrayBuffer = await res.arrayBuffer();
-  return Buffer.from(responseArrayBuffer);
+  const audioBase64 = payload?.choices?.[0]?.message?.audio?.data;
+  if (!audioBase64) {
+    throw new Error("Provider response did not include audio data.");
+  }
+
+  return {
+    buffer: Buffer.from(audioBase64, "base64"),
+    mimeType: format === "mp3" ? "audio/mpeg" : "audio/wav",
+  };
 }
 
 export type PingResult = {
@@ -72,8 +103,8 @@ export type PingResult = {
 };
 
 /**
- * Lightweight health check — hits the provider's /models endpoint
- * to confirm the API key and endpoint are reachable.
+ * Lightweight health check against the OpenAI-protocol /models endpoint.
+ * Confirms the API key and endpoint are reachable without generating audio.
  */
 export async function pingProvider(): Promise<PingResult> {
   const started = Date.now();
