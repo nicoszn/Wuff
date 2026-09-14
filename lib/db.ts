@@ -76,6 +76,16 @@ export function listGenerations(limit = 8): Promise<GenerationRecord[]> {
   return db.generations.orderBy("createdAt").reverse().limit(limit).toArray();
 }
 
+/** Same as listGenerations, scoped to one mode — used by the single-purpose
+ * clone/design pages so each tool's history only shows its own runs. */
+export async function listGenerationsByMode(
+  mode: GenerationRecord["mode"],
+  limit = 8
+): Promise<GenerationRecord[]> {
+  const matches = await db.generations.where("mode").equals(mode).toArray();
+  return matches.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+}
+
 export function updateSelectedTake(id: number, selectedTake: number): Promise<number> {
   return db.generations.update(id, { selectedTake });
 }
