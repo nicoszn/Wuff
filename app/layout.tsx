@@ -4,7 +4,13 @@ import { Providers } from "./providers";
 import AdSenseLoader from "@/components/ads/AdSenseLoader";
 import ConsentBanner from "@/components/ads/ConsentBanner";
 
+// Set this in production, e.g. NEXT_PUBLIC_SITE_URL=https://yourapp.com — used
+// as the base for canonical/OG/Twitter URLs across every page. Left as
+// example.com in dev so builds don't fail when it's unset.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Wuff Voice Desk — Free AI Voice Cloning & Voice Design",
   description: "Free AI voice tools: clone a voice from a short sample, or design a new one from a text description. No signup, no watermark — generate and download in seconds.",
 };
