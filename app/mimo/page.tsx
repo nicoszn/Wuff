@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function MimoPage() {
   return (
-    <main className="min-h-screen w-full bg-neutral-950 text-neutral-100">
+    <main >
       <VoiceCloneStudio />
     </main>
   );
