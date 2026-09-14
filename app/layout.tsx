@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Wuff Voice Desk",
-  description: "Automation-driven spot trading control panel for Wuff.",
+  description: "Voice desk for Wuff.",
 };
 
 export const viewport: Viewport = {
