@@ -13,11 +13,14 @@
   --color-signal: #2563eb; /* blue: info, signal fired */
   --color-signal-fg: #172554;
 
-  --color-surface: #0b0d10;
-  --color-surface-raised: #14171b;
-  --color-surface-border: #23272e;
-  --color-text-primary: #f2f3f5;
-  --color-text-secondary: #9aa1ab;
+  /* Surfaces — light slate stack (page → card → nested panel) */
+  --color-surface: #f8fafc; /* page background */
+  --color-surface-raised: #ffffff; /* card / panel background */
+  --color-surface-muted: #f8fafc; /* tinted zones inside a raised card — headers, dropzones, result strips */
+  --color-surface-border: #e2e8f0; /* hairlines, card borders, input borders */
+  --color-text-primary: #0f172a; /* headings, primary content */
+  --color-text-secondary: #64748b; /* labels, supporting copy */
+  --color-text-muted: #94a3b8; /* placeholders, captions, counters */
 
   /* Type scale (system sans-serif, mobile-first) */
   --text-display: 28px;
