@@ -143,7 +143,7 @@ export default function VoiceDesignPage() {
               {faqs.map((f) => (
                 <div className="rounded-xl border border-border/40 bg-card/50 p-5" key={f.q}>
                   <h3 className="text-sm font-semibold font-mono text-text-primary mb-2">{f.q}</h3>
-                  <p className="text-xs leading-relaxed text-text-secondary">{f.a}</p>
+                  <p className="text-xs leading-relaxed text-secondary">{f.a}</p>
                 </div>
               ))}
             </div>
