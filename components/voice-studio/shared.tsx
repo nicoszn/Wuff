@@ -9,7 +9,7 @@
 import { useEffect, useState } from "react";
 
 export const MAX_CONTEXT_TOKENS = 8192;
-export const MAX_TEXT_LENGTH = 2000;
+export const MAX_TEXT_LENGTH = 5000;
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 export const ACCEPTED_AUDIO_TYPES = ["audio/wav", "audio/x-wav", "audio/mpeg", "audio/mp3"];
 export const INLINE_TAGS = ["[laugh]", "[sigh]", "[pause]", "[breath]", "[whisper]"];
