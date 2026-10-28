@@ -94,7 +94,7 @@ const LAYOUTS = [
 
 type LayoutKey = (typeof LAYOUTS)[number]["key"];
 
-export default function CytoscapeShowcase() {
+export default function Cy() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
 
