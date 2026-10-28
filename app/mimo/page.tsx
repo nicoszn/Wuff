@@ -1,5 +1,5 @@
 import VoiceCloneStudio from "@/components/VoiceCloneStudio";
-
+import Cy from "@/components/Cy";
 export const metadata = {
   title: "Mimo — Voice Clone Studio",
   description: "Clone and synthesize voices with Mimo.",
@@ -9,7 +9,7 @@ export const metadata = {
 export default function MimoPage() {
   return (
     <main >
-      <VoiceCloneStudio />
+      <Cy />
     </main>
   );
 }
