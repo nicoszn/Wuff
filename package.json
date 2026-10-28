@@ -9,6 +9,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "cytoscape": "^3.34.4",
     "dexie": "^4.4.6",
     "framer-motion": "^12.23.25",
     "next": "^16.3.0",
