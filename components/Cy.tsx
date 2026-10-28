@@ -190,7 +190,9 @@ export default function Cy() {
     });
 
     // degree -> mapData source needs the field present on each node
-    cy.nodes().forEach((n) => n.data("degree", n.degree(false)));
+    cy.nodes().forEach((n) => {
+      n.data("degree", n.degree(false));
+    });
 
     cy.on("tap", "node", (evt) => {
       const node = evt.target as NodeSingular;
